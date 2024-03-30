@@ -1,0 +1,24 @@
+{
+  "name": "ecowitt-gateway",
+  "version": "1.0.0",
+  "description": "Retrieve data and get and set settings for Ecowitt Gateways",
+  "main": "src/EWGateway.js",
+  "author": "bmdevx",
+  "license": "GPL-3.0",
+  "keywords": [
+    "ecowitt",
+    "GW1000",
+    "GW1100",
+    "GW2000",
+    "weather",
+    "api"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bmdevx/ecowitt-gateway.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bmdevx/ecowitt-gateway/issues"
+  },
+  "homepage": "https://github.com/bmdevx/ecowitt-gateway#readme"
+}
