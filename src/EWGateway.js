@@ -5,11 +5,14 @@ const GWUtils = require('./GWUtils');
 const { COMMANDS } = require('./Commands');
 
 class EWGateway {
-    constructor(ipAddr, port = 45000) {
+    constructor(ipAddr, port = 45000, debug = false) {
 
         this.ipAddr = ipAddr;
         this.port = port;
+        this.debug = debug;
         this.utils = new GWUtils();
+
+        const gateway = this;
 
         const buildPacket = (command, data) => {
             var size = (data !== null ? data.length : 0) + 3;
@@ -36,13 +39,17 @@ class EWGateway {
                 const client = new net.Socket();
 
                 client.connect(port, ipAddr, function () {
-                    console.debug(`Connected. Executing CMD 0x${command.toString(16)}`);
+                    if (gateway.debug) {
+                        console.debug(`Connected. Executing CMD 0x${command.toString(16)}`);
+                    }
 
                     client.write(buildPacket(command, data));
                 });
 
                 client.on('data', function (buffer) {
-                    console.debug(`Received Data: ${buffer != null ? buffer.length : 0} bytes`);
+                    if (gateway.debug) {
+                        console.debug(`Received Data: ${buffer != null ? buffer.length : 0} bytes`);
+                    }
                     client.destroy(); // kill client after server's response as to not mix up commands
 
                     checkResponse(buffer, command, (data, err) => {
@@ -51,7 +58,9 @@ class EWGateway {
                 });
 
                 client.on('close', function () {
-                    console.debug('Connection closed');
+                    if (gateway.debug) {
+                        console.debug('Connection closed');
+                    }
                 });
             });
         };
