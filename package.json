@@ -1,6 +1,6 @@
 {
   "name": "ecowitt-gateway",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Retrieve data and get and set settings for Ecowitt Gateways",
   "main": "src/EWGateway.js",
   "author": "bmdevx",
