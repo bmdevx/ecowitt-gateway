@@ -37,8 +37,12 @@ class EWGateway {
         this.runCommand = (command, data = null) => {
             return new Promise((res, rej) => {
                 const client = new net.Socket();
+                client.setTimeout(2000, () => {
+                    client.destroy();
+                    rej('Connection Timeout')
+                });
 
-                client.connect(port, ipAddr, function () {
+                client.connect(port, ipAddr, () => {
                     if (gateway.debug) {
                         console.debug(`Connected. Executing CMD 0x${command.toString(16)}`);
                     }
@@ -46,7 +50,7 @@ class EWGateway {
                     client.write(buildPacket(command, data));
                 });
 
-                client.on('data', function (buffer) {
+                client.on('data', (buffer) => {
                     if (gateway.debug) {
                         console.debug(`Received Data: ${buffer != null ? buffer.length : 0} bytes`);
                     }
@@ -57,11 +61,12 @@ class EWGateway {
                     });
                 });
 
-                client.on('close', function () {
-                    if (gateway.debug) {
-                        console.debug('Connection closed');
-                    }
+                client.on('close', () => {
+                    if (gateway.debug) console.debug('Connection Closed');
                 });
+                
+                client.on('error', rej);
+                client.on('timeout', () => rej('Connection Timeout'));
             });
         };
     }
@@ -82,7 +87,8 @@ class EWGateway {
                     } else {
                         rej('Invalid Data Length');
                     }
-                });
+                })
+                .catch(rej);
         });
     }
 
@@ -153,7 +159,8 @@ class EWGateway {
                     } else {
                         res(data);
                     }
-                });
+                })
+                .catch(rej);
         });
     }
 
@@ -163,7 +170,8 @@ class EWGateway {
             this.runCommand(COMMANDS.CMD_READ_RAINDATA)
                 .then(buffer => {
                     res(this.utils.parseRainData(buffer));
-                });
+                })
+                .catch(rej);
         });
     }
 
@@ -206,8 +214,10 @@ class EWGateway {
                                 status: 'Rain Updated',
                                 data: rd
                             });
-                        });
-                });
+                        })
+                        .catch(rej);
+                })
+                .catch(rej);
         });
     }
 
@@ -217,7 +227,8 @@ class EWGateway {
             this.runCommand(COMMANDS.CMD_READ_RAIN)
                 .then(buffer => {
                     res(this.utils.parseRain(buffer));
-                });
+                })
+                .catch(rej);
         });
     }
 
@@ -227,7 +238,8 @@ class EWGateway {
             this.runCommand(COMMANDS.CMD_GET_SOILHUMIAD)
                 .then(buffer => {
                     res(this.utils.parseSoilData(buffer));
-                });
+                })
+                .catch(rej);
         });
     }
 
@@ -275,7 +287,8 @@ class EWGateway {
                                 });
                             }
                         });
-                });
+                })
+                .catch(rej);
         });
     }
 
@@ -285,7 +298,8 @@ class EWGateway {
             this.runCommand(COMMANDS.CMD_GET_PM25_OFFSET)
                 .then(buffer => {
                     res(this.utils.parsePM25Data(buffer));
-                });
+                })
+                .catch(rej);
         });
     }
 
@@ -294,7 +308,8 @@ class EWGateway {
             this.runCommand(COMMANDS.CMD_GET_CO2_OFFSET)
                 .then(buffer => {
                     res(this.utils.parseCO2OffsetData(buffer));
-                });
+                })
+                .catch(rej);
         });
     }
 
@@ -304,7 +319,8 @@ class EWGateway {
             this.runCommand(COMMANDS.CMD_READ_FIRMWARE)
                 .then(buffer => {
                     res(buffer.slice(5, buffer.length - 1).toString('ascii'));
-                });
+                })
+                .catch(rej);
         });
     }
 
@@ -315,7 +331,8 @@ class EWGateway {
                 .then(buffer => {
                     //todo parse
                     res(buffer.toString('hex'));
-                });
+                })
+                .catch(rej);
         });
     }
 
@@ -325,7 +342,8 @@ class EWGateway {
             this.runCommand(COMMANDS.CMD_READ_SATION_MAC)
                 .then(buffer => {
                     res(buffer.toString('hex', 4, buffer.length - 1).toUpperCase());
-                });
+                })
+                .catch(rej);
         });
     }
 
@@ -341,7 +359,8 @@ class EWGateway {
                             Object.assign(info, this.utils.parseUserPathInfo(buffer));
                             res(info);
                         });
-                });
+                })
+                .catch(rej);
         });
     }
 
@@ -391,8 +410,10 @@ class EWGateway {
                                     data: csi
                                 })
                             }
-                        });
-                });
+                        })
+                        .catch(rej);
+                })
+                .catch(rej);
         });
     }
 
