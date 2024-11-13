@@ -5,12 +5,14 @@ const GWUtils = require('./GWUtils');
 const { COMMANDS } = require('./Commands');
 
 class EWGateway {
-    constructor(ipAddr, port = 45000, debug = false) {
+    constructor(ipAddr, port = 45000, useReadRainData = null, debug = false) {
 
         this.ipAddr = ipAddr;
         this.port = port;
         this.debug = debug;
         this.utils = new GWUtils();
+
+        this.useReadRainData = false;
 
         const gateway = this;
 
@@ -69,6 +71,19 @@ class EWGateway {
                 client.on('timeout', () => rej('Connection Timeout'));
             });
         };
+
+        if (useReadRainData == null)
+        {
+            this.getFirmwareVersion()
+                .then(firmware => {
+                    if (firmware && !firmware.toUpperCase().includes('GW2000')) {
+                        this.useReadRainData = true;
+                    }
+                })
+                .catch();
+        } else{
+            this.useReadRainData = useReadRainData;
+        }
     }
 
 
@@ -100,7 +115,7 @@ class EWGateway {
                     var data = this.utils.parseLiveData(buffer);
 
                     const appendRain = (data) => {
-                        this.getRain()
+                        (this.useReadRainData ? this.getRainData() : this.getRain())
                             .then(rainData => {
                                 Object.assign(data, rainData);
                             })
@@ -169,7 +184,11 @@ class EWGateway {
         return new Promise((res, rej) => {
             this.runCommand(COMMANDS.CMD_READ_RAINDATA)
                 .then(buffer => {
-                    res(this.utils.parseRainData(buffer));
+                    try {
+                        res(this.utils.parseRainData(buffer));
+                    } catch (error) {
+                        rej(error);
+                    }
                 })
                 .catch(rej);
         });
@@ -226,7 +245,11 @@ class EWGateway {
         return new Promise((res, rej) => {
             this.runCommand(COMMANDS.CMD_READ_RAIN)
                 .then(buffer => {
-                    res(this.utils.parseRain(buffer));
+                    try {
+                        res(this.utils.parseRain(buffer));
+                    } catch (error) {
+                        rej(error)
+                    }
                 })
                 .catch(rej);
         });

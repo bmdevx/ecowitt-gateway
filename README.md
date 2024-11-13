@@ -16,6 +16,8 @@
 ### Methods
 
 ``` js
+constructor('IP_ADDRESS', PORT, USE_RAIN_DATA, DEBUG) //Only IP_ADDRESS is required, port is 45000 by default, USE_RAIN_DATA is null by default which will check the firmware for optimal use and can be set to true or false
+
 getSensors({            //Optional filter can be by type and/or status. Accepts strings or arrays of strings for type and status.
     type: 'WH65',
     status: 'active'
