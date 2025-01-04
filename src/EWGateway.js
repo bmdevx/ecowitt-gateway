@@ -80,7 +80,7 @@ class EWGateway {
                         this.useReadRainData = true;
                     }
                 })
-                .catch();
+                .catch(e => console.error(`Unable to get Ecowitt Gateway firmware version. Error: ${JSON.stringify(e)}`));
         } else{
             this.useReadRainData = useReadRainData;
         }
