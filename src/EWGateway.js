@@ -76,8 +76,11 @@ class EWGateway {
         {
             this.getFirmwareVersion()
                 .then(firmware => {
-                    if (firmware && !firmware.toUpperCase().includes('GW2000')) {
-                        this.useReadRainData = true;
+                    if (firmware) {
+                        const match = firmware.toUpperCase().match(/GW(\d+)/);
+                        if (match && Number(match[1]) < 2000) {
+                            this.useReadRainData = true;
+                        }
                     }
                 })
                 .catch(e => console.error(`Unable to get Ecowitt Gateway firmware version. Error: ${JSON.stringify(e)}`));

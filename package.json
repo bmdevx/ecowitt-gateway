@@ -1,6 +1,6 @@
 {
   "name": "ecowitt-gateway",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Retrieve data and get and set settings for Ecowitt Gateways",
   "main": "src/EWGateway.js",
   "author": "bmdevx",
@@ -9,7 +9,10 @@
     "ecowitt",
     "GW1000",
     "GW1100",
+    "GW1200",
     "GW2000",
+    "GW3000",
+    "GW3010",
     "weather",
     "api"
   ],
